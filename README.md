@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Resume Analysis and Scoring System
 
 A web application that analyzes and scores resumes against job descriptions using Natural Language Processing techniques. This tool helps recruiters and hiring managers quickly identify the best candidates for a position based on skills, experience, and education match.
