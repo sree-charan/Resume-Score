@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Resumes - Resume Analysis System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <h1 class="mb-4">Upload Resumes for Analysis</h1>
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label for="resume_files" class="form-label">
+                            <i class="fas fa-file-upload me-2"></i>Select Resume Files
+                        </label>
+                        <div class="input-group">
+                            {{ form.resume_files(class="form-control", id="resume_files", multiple=True) }}
+                        </div>
+                        <div class="form-text">
+                            Upload one or multiple resume files. Supported formats: PDF, DOCX, TXT
+                        </div>
+                        {% if form.resume_files.errors %}
+                            <div class="text-danger">
+                                {% for error in form.resume_files.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="job_description" class="form-label">
+                            <i class="fas fa-briefcase me-2"></i>Job Description
+                        </label>
+                        {{ form.job_description(class="form-control", id="job_description", rows=10) }}
+                        <div class="form-text">
+                            Enter the job description text to match against the uploaded resumes.
+                        </div>
+                        {% if form.job_description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.job_description.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h4 class="mb-3">Instructions</h4>
+            <div class="card">
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li class="mb-2">Upload one or multiple resume files in PDF, DOCX, or TXT format.</li>
+                        <li class="mb-2">Enter the job description text you want to match against the resumes.</li>
+                        <li class="mb-2">Click "Analyze" to process the resumes and get detailed analysis and scores.</li>
+                    </ol>
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="fas fa-info-circle me-2"></i> For bulk uploads, you can select multiple files by holding Ctrl (or Cmd on Mac) while selecting files.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add custom file input behavior and validation
+    document.getElementById('resume_files').addEventListener('change', function(e) {
+        const fileCount = this.files.length;
+        const fileList = document.createElement('div');
+        fileList.className = 'mt-2';
+        
+        if (fileCount > 0) {
+            let validFiles = true;
+            const allowedExtensions = ['.pdf', '.docx', '.doc', '.txt'];
+            
+            fileList.innerHTML = `<p><strong>${fileCount} file(s) selected:</strong></p>`;
+            const ul = document.createElement('ul');
+            ul.className = 'list-group';
+            
+            for (let i = 0; i < fileCount; i++) {
+                const file = this.files[i];
+                const li = document.createElement('li');
+                li.className = 'list-group-item py-2';
+                
+                // Check file extension
+                const extension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                if (allowedExtensions.includes(extension)) {
+                    li.innerHTML = `
+                        <i class="fas fa-file me-2 text-primary"></i>
+                        ${file.name} <span class="badge bg-secondary ms-2">${(file.size / 1024).toFixed(1)} KB</span>
+                    `;
+                } else {
+                    li.innerHTML = `
+                        <i class="fas fa-times-circle me-2 text-danger"></i>
+                        ${file.name} <span class="badge bg-danger ms-2">Invalid format</span>
+                    `;
+                    validFiles = false;
+                }
+                
+                ul.appendChild(li);
+            }
+            
+            fileList.appendChild(ul);
+            
+            if (!validFiles) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger mt-2';
+                alert.innerHTML = 'Some files have invalid formats. Only PDF, DOCX, DOC, and TXT files are allowed.';
+                fileList.appendChild(alert);
+            }
+        }
+        
+        // Clear previous file list and append the new one
+        const prevFileList = this.nextElementSibling;
+        if (prevFileList && prevFileList.classList.contains('mt-2')) {
+            prevFileList.remove();
+        }
+        
+        this.parentNode.appendChild(fileList);
+    });
+</script>
+{% endblock %}
