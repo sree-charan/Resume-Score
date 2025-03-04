@@ -42,6 +42,7 @@ instance/
 
 # Project specific
 app/uploads/
+/app/data/
 *.log
 
 # OS specific
