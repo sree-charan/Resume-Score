@@ -85,7 +85,7 @@
                                             <small class="text-muted">{{ job.text | truncate(70) }}</small>
                                         </div>
                                     </td>
-                                    <td>{{ job.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ job.created_at | format_datetime }}</td>
                                     <td>
                                         <span class="badge bg-primary">{{ job.resumes|length }}</span>
                                     </td>
@@ -131,7 +131,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="mb-3"><strong>Created on:</strong> {{ job.created_at.strftime('%B %d, %Y at %H:%M') }}</p>
+                    <p class="mb-3"><strong>Created on:</strong> {{ job.created_at | format_datetime('%B %d, %Y at %H:%M') }}</p>
                     <h6>Job Description:</h6>
                     <div class="border rounded p-3 bg-light">
                         {{ job.text | nl2br }}

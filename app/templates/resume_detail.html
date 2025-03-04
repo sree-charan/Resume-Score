@@ -134,7 +134,7 @@
             </div>
             <div class="card-footer bg-white">
                 <small class="text-muted">
-                    <i class="fas fa-calendar me-2"></i>Uploaded on {{ resume.created_at.strftime('%B %d, %Y') }}
+                    <i class="fas fa-calendar me-2"></i>Uploaded on {{ resume.created_at | format_datetime('%B %d, %Y') }}
                 </small>
             </div>
         </div>

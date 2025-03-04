@@ -88,40 +88,37 @@ def export_to_csv(resumes):
         # Write data rows
         for resume in resumes:
             try:
+                # Get data from resume object
+                data = resume.data
                 # Get detailed analysis
-                analysis = resume.get_analysis()
-                resume_dict = resume.to_dict()
+                analysis = data.get('detailed_analysis', {})
+                scores = analysis.get('component_scores', {})
+                skills_analysis = analysis.get('skills_analysis', {})
                 
-                # Extract component scores
-                scores = analysis['component_scores']
-                skills_analysis = analysis['skills_analysis']
-                
-                # Helper function to format JSON lists
-                def format_json_list(json_str, key=None):
-                    try:
-                        data = json.loads(json_str) if json_str else []
-                        if key and isinstance(data, list) and len(data) > 0 and isinstance(data[0], dict):
-                            return ", ".join([item.get(key, '') for item in data])
-                        return ", ".join(data) if isinstance(data, list) else str(data)
-                    except:
-                        return ""
+                # Helper function to format list data
+                def format_list(data):
+                    if isinstance(data, list):
+                        return ", ".join(str(item) for item in data)
+                    elif isinstance(data, str):
+                        return data
+                    return ""
                 
                 # Write the row with all fields
                 writer.writerow([
                     # Basic Information
-                    resume_dict.get('candidate_name', ''),
-                    resume_dict.get('email', ''),
-                    resume_dict.get('phone', ''),
-                    resume_dict.get('location', ''),
+                    data.get('candidate_name', ''),
+                    data.get('email', ''),
+                    data.get('phone', ''),
+                    data.get('location', ''),
                     
                     # Online Presence
-                    resume_dict.get('linkedin_url', ''),
-                    resume_dict.get('github_url', ''),
-                    resume_dict.get('portfolio_url', ''),
-                    format_json_list(resume.other_urls),
+                    data.get('linkedin_url', ''),
+                    data.get('github_url', ''),
+                    data.get('portfolio_url', ''),
+                    format_list(data.get('other_urls', [])),
                     
                     # Analysis Scores
-                    f"{analysis['overall_score']:.1f}",
+                    f"{data.get('score', 0):.1f}",
                     f"{scores.get('skills_match', 0):.1f}",
                     f"{scores.get('required_skills_match', 0):.1f}",
                     f"{scores.get('experience_match', 0):.1f}",
@@ -129,57 +126,61 @@ def export_to_csv(resumes):
                     f"{scores.get('semantic_similarity', 0):.1f}",
                     
                     # Skills and Expertise
-                    format_json_list(resume.skills, 'name'),  # Assuming skills are stored as dicts with 'name' and 'level'
-                    format_json_list(resume.skills),  # Soft skills
-                    format_json_list(resume.languages),
-                    format_json_list(resume.certifications),
-                    ", ".join(skills_analysis.get('missing_skills', [])),
+                    format_list(resume.get_skills_list()),  # Use get_skills_list() method
+                    format_list(data.get('soft_skills', [])),
+                    format_list(data.get('languages', [])),
+                    format_list(data.get('certifications', [])),
+                    format_list(skills_analysis.get('missing_skills', [])),
                     
                     # Education
-                    format_json_list(resume.education, 'degree'),
-                    format_json_list(resume.education, 'field'),
-                    format_json_list(resume.education, 'institution'),
-                    resume_dict.get('gpa', ''),
-                    format_json_list(resume.academic_awards),
-                    format_json_list(resume.education, 'year'),
+                    data.get('education_level', ''),
+                    data.get('field_of_study', ''),
+                    data.get('universities', ''),
+                    data.get('gpa', ''),
+                    format_list(data.get('academic_awards', [])),
+                    data.get('graduation_years', ''),
                     
                     # Work Experience
-                    resume_dict.get('total_years_experience', ''),
-                    resume_dict.get('current_position', ''),
-                    resume_dict.get('current_company', ''),
-                    format_json_list(resume.experience, 'title'),
-                    format_json_list(resume.experience, 'company'),
+                    data.get('total_years_experience', ''),
+                    data.get('current_position', ''),
+                    data.get('current_company', ''),
+                    format_list(data.get('previous_positions', [])),
+                    format_list(data.get('companies', [])),
                     
                     # Research and Publications
-                    format_json_list(resume.research_papers, 'title'),
-                    format_json_list(resume.publications, 'title'),
-                    format_json_list(resume.patents, 'title'),
-                    format_json_list(resume.research_papers, 'area'),
+                    format_list(data.get('research_papers', [])),
+                    format_list(data.get('publications', [])),
+                    format_list(data.get('patents', [])),
+                    format_list(data.get('research_areas', [])),
                     
                     # Projects
-                    format_json_list(resume.projects, 'name'),
-                    format_json_list(resume.projects, 'technologies'),
-                    format_json_list(resume.projects, 'url'),
+                    format_list(data.get('projects', [])),
+                    format_list(data.get('project_technologies', [])),
+                    format_list(data.get('project_links', [])),
                     
                     # Leadership and Activities
-                    format_json_list(resume.leadership_roles),
-                    format_json_list(resume.volunteer_work),
-                    format_json_list(resume.extracurricular),
+                    format_list(data.get('leadership_roles', [])),
+                    format_list(data.get('volunteer_work', [])),
+                    format_list(data.get('extracurricular', [])),
                     
                     # Personal
-                    format_json_list(resume.interests),
-                    format_json_list(resume.achievements),
+                    format_list(data.get('interests', [])),
+                    format_list(data.get('achievements', [])),
                     
                     # Metadata
-                    resume.original_filename,
-                    resume.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                    resume.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+                    data.get('original_filename', ''),
+                    data.get('created_at', ''),
+                    data.get('updated_at', '')
                 ])
                 
             except Exception as e:
-                logger.error(f"Error processing resume {resume.id}: {str(e)}")
+                logger.error(f"Error processing resume in CSV export: {str(e)}")
                 # Write basic info if processing fails
-                writer.writerow([resume.candidate_name or "Unknown", resume.email or "", resume.phone or ""] + [""] * 40)
+                writer.writerow([
+                    resume.data.get('candidate_name', 'Unknown'), 
+                    resume.data.get('email', ''), 
+                    resume.data.get('phone', '')
+                ] + [""] * 40)
         
         return output.getvalue()
         

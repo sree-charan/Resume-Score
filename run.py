@@ -1,5 +1,5 @@
 import os
-from app.app import app, db
+from app.app import app
 import nltk
 from app.__init__ import init_app_directories
 
@@ -14,11 +14,6 @@ nltk.download('wordnet', quiet=True)
 if __name__ == '__main__':
     # Initialize application directories
     init_app_directories()
-    
-    # Create database tables
-    with app.app_context():
-        db.create_all()
-        print("Database tables created successfully!")
     
     print("Starting the Resume Analysis System...")
     print("Access the application at: http://127.0.0.1:5000")

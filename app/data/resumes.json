@@ -1,0 +1,147 @@
+[
+  {
+    "original_filename": "Sree_Charan_Mukkara_Software_Engineering_Intern_Machine_Learning_Platform_20250303.pdf",
+    "filename": "resume_2b15838d-9d4c-41d3-9b99-332ed32d7dce.pdf",
+    "path": "/workspaces/Resume-Score/app/uploads/resumes/resume_2b15838d-9d4c-41d3-9b99-332ed32d7dce.pdf",
+    "job_description_id": "590e5e57-6115-45bb-a493-476a62718c3b",
+    "candidate_name": "",
+    "email": "",
+    "phone": "",
+    "skills": [],
+    "education": "",
+    "experience": "",
+    "score": 0,
+    "id": "2b15838d-9d4c-41d3-9b99-332ed32d7dce",
+    "detailed_analysis": {},
+    "created_at": "2024-03-03T00:00:00Z"
+  },
+  {
+    "original_filename": "Sree_Charan_Mukkara_Software_Engineering_Intern_Machine_Learning_Platform_20250303.pdf",
+    "filename": "resume_9bce0ba8-6d60-4689-b256-68bca2efbdb5.pdf",
+    "path": "/workspaces/Resume-Score/app/uploads/resumes/resume_9bce0ba8-6d60-4689-b256-68bca2efbdb5.pdf",
+    "job_description_id": "2b61c47c-aa34-40fc-833e-b6b2f06992eb",
+    "candidate_name": "",
+    "email": "",
+    "phone": "",
+    "skills": [],
+    "education": "",
+    "experience": "",
+    "score": 0.550000011920929,
+    "detailed_analysis": {
+      "overall_score": 0.550000011920929,
+      "component_scores": {
+        "skills_match": 0.0,
+        "required_skills_match": 0.0,
+        "experience_match": 0.0,
+        "education_match": 0.0,
+        "semantic_similarity": 5.5
+      },
+      "skills_analysis": {
+        "matched_skills": [],
+        "missing_skills": [
+          "scrum",
+          "communication"
+        ],
+        "skill_contexts": {},
+        "required_skills": [
+          "scrum",
+          "communication"
+        ]
+      },
+      "experience_analysis": [],
+      "education_analysis": [],
+      "similarity_analysis": {
+        "similarity_score": 0.05501226708292961,
+        "method": "BERT semantic similarity"
+      }
+    },
+    "created_at": "2025-03-04T23:42:50.327521",
+    "id": "9bce0ba8-6d60-4689-b256-68bca2efbdb5"
+  },
+  {
+    "original_filename": "Sree_Charan_Mukkara_Software_Engineering_Intern_Machine_Learning_Platform_20250303.pdf",
+    "filename": "resume_e868e41c-b260-4367-a6ce-ee73122c0aeb.pdf",
+    "path": "/workspaces/Resume-Score/app/uploads/resumes/resume_e868e41c-b260-4367-a6ce-ee73122c0aeb.pdf",
+    "job_description_id": "2626a388-af95-439e-bb45-48989fa85609",
+    "candidate_name": "",
+    "email": "",
+    "phone": "",
+    "skills": [],
+    "education": "",
+    "experience": "",
+    "score": 0.550000011920929,
+    "detailed_analysis": {
+      "overall_score": 0.550000011920929,
+      "component_scores": {
+        "skills_match": 0.0,
+        "required_skills_match": 0.0,
+        "experience_match": 0.0,
+        "education_match": 0.0,
+        "semantic_similarity": 5.5
+      },
+      "skills_analysis": {
+        "matched_skills": [],
+        "missing_skills": [
+          "scrum",
+          "communication"
+        ],
+        "skill_contexts": {},
+        "required_skills": [
+          "scrum",
+          "communication"
+        ]
+      },
+      "experience_analysis": [],
+      "education_analysis": [],
+      "similarity_analysis": {
+        "similarity_score": 0.05501226708292961,
+        "method": "BERT semantic similarity"
+      }
+    },
+    "created_at": "2025-03-04T23:42:55.051453",
+    "id": "e868e41c-b260-4367-a6ce-ee73122c0aeb"
+  },
+  {
+    "original_filename": "Sree_Charan_Mukkara_Software_Engineering_Intern_Machine_Learning_Platform_20250303.pdf",
+    "filename": "resume_28246964-45fa-44e9-a093-c1447fcfe5b0.pdf",
+    "path": "/workspaces/Resume-Score/app/uploads/resumes/resume_28246964-45fa-44e9-a093-c1447fcfe5b0.pdf",
+    "job_description_id": "201bde98-35a1-4963-837b-142f84312a52",
+    "candidate_name": "",
+    "email": "",
+    "phone": "",
+    "skills": [],
+    "education": "",
+    "experience": "",
+    "score": 0.550000011920929,
+    "detailed_analysis": {
+      "overall_score": 0.550000011920929,
+      "component_scores": {
+        "skills_match": 0.0,
+        "required_skills_match": 0.0,
+        "experience_match": 0.0,
+        "education_match": 0.0,
+        "semantic_similarity": 5.5
+      },
+      "skills_analysis": {
+        "matched_skills": [],
+        "missing_skills": [
+          "communication",
+          "scrum"
+        ],
+        "skill_contexts": {},
+        "required_skills": [
+          "communication",
+          "scrum"
+        ]
+      },
+      "experience_analysis": [],
+      "education_analysis": [],
+      "similarity_analysis": {
+        "similarity_score": 0.05501226708292961,
+        "method": "BERT semantic similarity"
+      }
+    },
+    "created_at": "2025-03-04T23:45:54.484925",
+    "id": "28246964-45fa-44e9-a093-c1447fcfe5b0"
+  }
+]

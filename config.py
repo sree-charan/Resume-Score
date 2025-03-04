@@ -16,9 +16,10 @@ UPLOAD_FOLDER_RESUMES = os.path.join(BASE_DIR, 'app', 'uploads', 'resumes')
 UPLOAD_FOLDER_JOB_DESCRIPTIONS = os.path.join(BASE_DIR, 'app', 'uploads', 'job_descriptions')
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max upload size
 
-# SQLite database settings
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:your_password@localhost/resume_analyzer'
-SQLALCHEMY_TRACK_MODIFICATIONS = False
+# JSON storage paths
+JSON_STORAGE_PATH = os.path.join(BASE_DIR, 'app', 'data')
+RESUMES_JSON = os.path.join(JSON_STORAGE_PATH, 'resumes.json')
+JOB_DESCRIPTIONS_JSON = os.path.join(JSON_STORAGE_PATH, 'job_descriptions.json')
 
 # Debug settings
 DEBUG = True

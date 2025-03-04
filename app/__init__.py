@@ -11,6 +11,9 @@ def init_app_directories():
     os.makedirs(os.path.join('app', 'uploads', 'resumes'), exist_ok=True)
     os.makedirs(os.path.join('app', 'uploads', 'job_descriptions'), exist_ok=True)
     
+    # Create JSON storage directory
+    os.makedirs(os.path.join('app', 'data'), exist_ok=True)
+    
     # Create other required directories
     os.makedirs(os.path.join('app', 'templates', 'errors'), exist_ok=True)
     os.makedirs(os.path.join('app', 'static', 'css'), exist_ok=True)

@@ -61,6 +61,8 @@
                 </h5>
             </div>
             <div class="card-body">
+                <p class="mb-3"><strong>Created on:</strong> {{ job_description.created_at | format_datetime('%B %d, %Y at %H:%M') }}</p>
+                <h6>Job Description:</h6>
                 <p class="mb-0 job-description-text">{{ job_description.text | truncate(500) }}</p>
                 {% if job_description.text | length > 500 %}
                     <button class="btn btn-link p-0 mt-2" id="showFullJobDesc">Show more...</button>

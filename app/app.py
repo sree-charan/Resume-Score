@@ -4,8 +4,6 @@ from flask_wtf import FlaskForm
 from wtforms import FileField, TextAreaField, SubmitField, StringField
 from wtforms.validators import DataRequired
 from werkzeug.utils import secure_filename
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from datetime import datetime
 import uuid
 import sys
@@ -18,11 +16,7 @@ import config
 app = Flask(__name__)
 app.config.from_object('config')
 
-# Initialize database and migrations
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-# Import models after db initialization to avoid circular imports
+# Import models
 from app.models.resume import Resume, JobDescription
 from app.utils.resume_parser import ResumeParser
 from app.utils.resume_analyzer import ResumeAnalyzer
@@ -31,6 +25,8 @@ from app.utils.export import export_to_csv
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER_RESUMES'], exist_ok=True)
 os.makedirs(app.config['UPLOAD_FOLDER_JOB_DESCRIPTIONS'], exist_ok=True)
+os.makedirs(os.path.dirname(app.config['RESUMES_JSON']), exist_ok=True)
+os.makedirs(os.path.dirname(app.config['JOB_DESCRIPTIONS_JSON']), exist_ok=True)
 
 # Form classes
 class UploadForm(FlaskForm):
@@ -68,10 +64,9 @@ def upload():
             text=job_description_text,
             filename=job_desc_filename,
             path=job_desc_path,
-            created_at=datetime.now()
+            created_at=datetime.now().isoformat()
         )
-        db.session.add(job_desc)
-        db.session.commit()
+        job_desc.save()
         
         # Process resume files
         resume_files = request.files.getlist('resume_files')
@@ -92,9 +87,9 @@ def upload():
                 parsed_data = parser.parse()
                 
                 analyzer = ResumeAnalyzer(parsed_data, job_description_text)
-                score = analyzer.calculate_score()
+                analysis = analyzer.calculate_score()
                 
-                # Save to database
+                # Save to JSON storage
                 resume = Resume(
                     id=resume_id,
                     original_filename=original_filename,
@@ -104,16 +99,16 @@ def upload():
                     candidate_name=parsed_data.get('name', ''),
                     email=parsed_data.get('email', ''),
                     phone=parsed_data.get('phone', ''),
-                    skills=','.join(parsed_data.get('skills', [])),
+                    skills=parsed_data.get('skills', []),
                     education=parsed_data.get('education', ''),
                     experience=parsed_data.get('experience', ''),
-                    score=score,
-                    created_at=datetime.now()
+                    score=analysis['overall_score'],
+                    detailed_analysis=analysis,
+                    created_at=datetime.now().isoformat()
                 )
-                db.session.add(resume)
+                resume.save()
                 resume_ids.append(resume_id)
         
-        db.session.commit()
         return redirect(url_for('results', job_id=job_desc_id))
     
     return render_template('upload.html', form=form)
@@ -121,48 +116,56 @@ def upload():
 @app.route('/results/<job_id>')
 def results(job_id):
     """Display analysis results"""
-    job_description = JobDescription.query.get(job_id)
+    job_description = JobDescription.get_by_id(job_id)
     if not job_description:
         flash("Job description not found", "danger")
         return redirect(url_for('index'))
         
-    resumes = Resume.query.filter_by(job_description_id=job_id).order_by(Resume.score.desc()).all()
+    resume_dicts = Resume.get_by_job_id(job_id)
+    resume_dicts.sort(key=lambda x: x.get('score', 0), reverse=True)
+    
+    # Convert dictionaries to Resume objects without passing id twice
+    resumes = [Resume(**r) for r in resume_dicts]
+    
     return render_template('results.html', job_description=job_description, resumes=resumes)
 
 @app.route('/resume/<resume_id>')
 def view_resume(resume_id):
     """View individual resume details"""
-    resume = Resume.query.get(resume_id)
-    if not resume:
+    resume_data = Resume.get_by_id(resume_id)
+    if not resume_data:
         flash("Resume not found", "danger")
         return redirect(url_for('index'))
-        
+    
+    resume = Resume(**resume_data)
     return render_template('resume_detail.html', resume=resume)
 
 @app.route('/download/<resume_id>')
 def download_resume(resume_id):
     """Download original resume file"""
-    resume = Resume.query.get(resume_id)
-    if not resume:
+    resume_data = Resume.get_by_id(resume_id)
+    if not resume_data:
         flash("Resume not found", "danger")
         return redirect(url_for('index'))
         
     return send_from_directory(
-        os.path.dirname(resume.path),
-        os.path.basename(resume.path),
+        os.path.dirname(resume_data['path']),
+        os.path.basename(resume_data['path']),
         as_attachment=True,
-        download_name=resume.original_filename
+        download_name=resume_data['original_filename']
     )
 
 @app.route('/export/<job_id>')
 def export_results(job_id):
     """Export analysis results to CSV"""
-    job_description = JobDescription.query.get(job_id)
+    job_description = JobDescription.get_by_id(job_id)
     if not job_description:
         flash("Job description not found", "danger")
         return redirect(url_for('index'))
         
-    resumes = Resume.query.filter_by(job_description_id=job_id).order_by(Resume.score.desc()).all()
+    resume_dicts = Resume.get_by_job_id(job_id)
+    # Convert dictionaries to Resume objects
+    resumes = [Resume(**r) for r in resume_dicts]
     
     # Format data for CSV
     csv_data = export_to_csv(resumes)
@@ -197,15 +200,15 @@ def job_descriptions():
             text=job_description_text,
             filename=job_desc_filename,
             path=job_desc_path,
-            created_at=datetime.now()
+            created_at=datetime.now().isoformat()
         )
-        db.session.add(job_desc)
-        db.session.commit()
+        job_desc.save()
         
         flash("Job description saved successfully", "success")
         return redirect(url_for('job_descriptions'))
     
-    job_descriptions = JobDescription.query.order_by(JobDescription.created_at.desc()).all()
+    job_descriptions = JobDescription.get_all()
+    job_descriptions.sort(key=lambda x: x.get('created_at', ''), reverse=True)
     return render_template('job_descriptions.html', form=form, job_descriptions=job_descriptions)
 
 # Custom filters for Jinja
@@ -214,6 +217,17 @@ def nl2br(value):
     if value:
         return value.replace('\n', '<br>')
     return ''
+
+@app.template_filter('format_datetime') 
+def format_datetime(value, format='%Y-%m-%d'):
+    """Format a datetime string"""
+    if not value:
+        return ''
+    try:
+        dt = datetime.fromisoformat(value)
+        return dt.strftime(format)
+    except (ValueError, TypeError):
+        return value
 
 # Error handlers
 @app.errorhandler(404)
@@ -226,6 +240,4 @@ def internal_server_error(e):
 
 # For running in development mode
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Create database tables
     app.run(debug=True)
