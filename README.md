@@ -23,7 +23,7 @@ A web application that analyzes and scores resumes against job descriptions usin
 1. Clone this repository:
    ```
    git clone https://github.com/sree-charan/Resume-Score.git
-   cd resume-analysis-system
+   cd Resume-Score
    ```
 
 2. Create and activate a virtual environment:
